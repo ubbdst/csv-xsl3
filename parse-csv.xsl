@@ -23,8 +23,9 @@
     
     <xsl:function name="flub:not-in-quote" as="xs:boolean" expand-text="1">
         <xsl:param name="string" as="xs:string?"/>        
-        {if(((string-length($string) - string-length(replace($string, $quote, ''))) mod 2 = 0)
-        or string-length($string) = string-length(replace($string, $quote, '')))
+        <xsl:variable name="string-length" as="xs:integer" select="string-length($string)"/>
+        <xsl:variable name="string-length-quote" select="string-length(replace($string, $quote, ''))" as="xs:integer"/>
+        {if(($string-length=$string-length-quote) or ($string-length - $string-length-quote) mod 2 = 0)
         then true() 
         else false()
         }
@@ -75,7 +76,7 @@
                     <xsl:sequence select="$current-string"/>
                     <xsl:next-iteration>
                         <xsl:with-param name="row-position" select="$row-position +1"/>
-                        <xsl:with-param name="segment" select="()"></xsl:with-param>
+                        <xsl:with-param name="segment" select="()"/>
                     </xsl:next-iteration>
                 </xsl:otherwise>
             </xsl:choose>
@@ -84,11 +85,11 @@
     
     <xsl:function name="flub:parse-csv-fields" as="xs:string*">
         <xsl:param name="string" as="xs:string?"/>      
-        <xsl:variable name="tokens" select="tokenize($string,$separator-regex)"/>
+        <xsl:variable name="tokens" select="tokenize($string,$separator-regex)" as="xs:string+"/>
             <xsl:iterate select="$tokens">
                 <xsl:param name="segment" as="xs:string?"/>
-                <xsl:variable name="position" select="position()"/>
-                <xsl:variable name="current-string" select="replace(concat($segment,.),'^\s+|\s+$','')"/>
+                <xsl:variable name="position" select="position()" as="xs:integer"/>
+                <xsl:variable name="current-string" select="replace(concat($segment,.),'^\s+|\s+$','')" as="xs:string"/>
                 <xsl:choose>
                     <xsl:when test="flub:not-in-quote($current-string)">
                         <xsl:sequence select="$current-string"/>
