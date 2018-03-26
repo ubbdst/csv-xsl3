@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+    xmlns:flub="http://data.ub.uib.no/ns/xsl/function-library"
+    stylesheet="file:/C:/Users/ogj077/Repos/systemer/unpaywall2rdf/xsl/csv-xsl3/parse-csv.xsl" xslt-version="3">
+    <x:scenario  label="Scenario for testing function parse-csv-fields">
+        <x:call function="flub:parse-csv-fields">
+            <x:param name="string">10.1016/s0368-1742(12)80062-2,f,1,,,,,,,,"Annual Reports of Proceedings under the Diseases of Animals Acts, &amp;c., for the year 1911. Price, 1s.",0368-1742,Journal of Comparative Pathology and Therapeutics,f,Elsevier BV,1912,journal-article,2017-11-15 20:59:13.613145               
+            </x:param>
+        </x:call>
+        <x:expect label="failing issn" test=".[12]='test'"/>
+    </x:scenario>
+</x:description>
