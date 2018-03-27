@@ -7,7 +7,7 @@
     version="3.0">
     
     <xsl:param name="quote" select="'&quot;'"/>
-    <xsl:param name="debug" as="xs:boolean" select="true()"/>
+    <xsl:param name="debug" as="xs:boolean" select="false()"/>
     <xsl:param name="separator-regex" select="','"/>
     <xsl:param name="newline-regex" select="'\n'"/>
     <xsl:param name="newline"><xsl:text>
@@ -89,13 +89,15 @@
     <xsl:function name="flub:parse-csv-fields" as="xs:string*">
         <xsl:param name="string" as="xs:string?"/>      
         
-        <xsl:variable name="tokens" select="tokenize($string,$separator-regex)" as="xs:string+"/>
+        <xsl:variable name="tokens" select="tokenize($string,$separator-regex)" as="xs:string*"/>
             
            <xsl:iterate select="$tokens">
                 <xsl:param name="segment" as="xs:string?"/>
-                <xsl:message expand-text="1">
+              <xsl:if test="$debug">  
+                  <xsl:message expand-text="1">
                     token: {.}
-                </xsl:message>               
+                </xsl:message>      
+              </xsl:if>
                 <xsl:variable name="position" select="position()" as="xs:integer"/>
                 <xsl:variable name="current-string" select="replace(string-join(($segment,.),$separator-regex),'(^\s+|\s+)$','')" as="xs:string"/>
                 <xsl:choose>
@@ -106,9 +108,11 @@
                         </xsl:next-iteration>
                     </xsl:when>
                     <xsl:otherwise>
+                    <xsl:if test="$debug">
                         <xsl:message expand-text="1">
                             <xsl:message>otherwise:{$segment}</xsl:message>
                         </xsl:message>
+                    </xsl:if>
                          <xsl:next-iteration>
                              <xsl:with-param name="segment" select="$current-string"/>
                         </xsl:next-iteration>
