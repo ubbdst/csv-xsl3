@@ -13,12 +13,14 @@
     <xsl:variable name="CRLF" as="xs:string" select="'&#x0D;?&#x0A;'"/>
     <xsl:variable name="DQUOTE" as="xs:string" select="'&#x22;'"/>
     <xsl:variable name="TWODQUOTE" as="xs:string">{$DQUOTE}{$DQUOTE}</xsl:variable>
-    <xsl:variable name="NON_ESCAPED" as="xs:string">[{$TEXTDATA}]+</xsl:variable>
+    <xsl:variable name="NON_ESCAPED" as="xs:string">[{$TEXTDATA}]</xsl:variable>
     
     <xsl:variable name="ESCAPED" as="xs:string">{$DQUOTE}([{$TEXTDATA}{$COMMA}]|{$TWODQUOTE}|{$CRLF})*{$DQUOTE}</xsl:variable>
-    <xsl:variable name="FIELD" as="xs:string">(({$NON_ESCAPED})|({$ESCAPED}))</xsl:variable>
+    <xsl:variable name="FIELD" as="xs:string">(({$NON_ESCAPED}*)|({$ESCAPED}))</xsl:variable>
+    <!-- empty regex  '' match disallowed in xslt, using for first row combined with |^,-->
+    <xsl:variable name="FIELD.ONEORMORENON_ESPACED" as="xs:string">(({$NON_ESCAPED}+)|({$ESCAPED}))</xsl:variable>
     <xsl:variable name="NAME" as="xs:string">{$FIELD}</xsl:variable>
     <xsl:variable name="HEADER" as="xs:string">{$NAME}({$COMMA}{$NAME})*</xsl:variable>
-    <xsl:variable name="RECORD" as="xs:string">{$FIELD}({$COMMA}{$FIELD})*</xsl:variable>
+    <xsl:variable name="RECORD" as="xs:string">({$FIELD.ONEORMORENON_ESPACED}|^{$COMMA})({$COMMA}{$FIELD})*</xsl:variable>
     
 </xsl:stylesheet>

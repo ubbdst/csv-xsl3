@@ -9,18 +9,20 @@
     <xsl:param name="quote" select="'&quot;'"/>
     <xsl:param name="separator-regex" select="','"/>
     <xsl:param name="newline-regex" select="'\n'"/>
-    <xsl:param name="newline"><xsl:text>
-</xsl:text></xsl:param>
+    <xsl:variable name="newline" select="'&#x0D;&#x0A;'"/>
     <!-- grammar from https://tools.ietf.org/html/rfc4180-->  
     <xsl:include href="rfc4180.xsl"/>
     <xsl:output indent="yes"/> 
     <xsl:variable name="string"> "       test""           , test1","test2
 ""             test3"
-    1,2,3,4,5,"six"</xsl:variable>
+    1,2,3,4,5,"six"</xsl:variable>    
+    <xsl:variable name="field-regex"><xsl:text expand-text="1">((({$FIELD.ONEORMORENON_ESPACED}),?|({$FIELD}),)|,)</xsl:text></xsl:variable>
+    
     <xsl:strip-space elements="*"/>
     <xsl:template match="/"> 
+        <xsl:sequence select="$field-regex"/>
         <xsl:sequence select="flub:parse-csv('file:/home/oyvind/repos/systemer/unpaywall2rdf/xsl/csv-xsl3/test/csv-spectrum/csvs/utf8.csv')"/>
-        
+        <xsl:sequence select="flub:get-field('aa,a')"></xsl:sequence>
   </xsl:template>    
     
     <xsl:function name="flub:not-in-quote" as="xs:boolean" expand-text="1">
@@ -38,10 +40,7 @@
             <xsl:param name="preceding-lines" as="xs:string?"/>
             <xsl:on-completion>
                 <xsl:if test="exists($preceding-lines)">
-                    <xsl:message>Unable to parse csv, last line unclosed.</xsl:message>
-                </xsl:if>
-                <xsl:if test="flub:isCompleteRecord($preceding-lines)">
-                    <xsl:message>test</xsl:message>
+                    <xsl:message>Unable to parse csv, last line unclosed. rest {$preceding-lines}</xsl:message>
                 </xsl:if>
             </xsl:on-completion>
             <xsl:variable name="csv-record" as="xs:string"><xsl:text>{$preceding-lines}{if ($preceding-lines) then $newline else ''}{.}</xsl:text></xsl:variable>
@@ -65,10 +64,16 @@
     </xsl:function>
     
     <xsl:function name="flub:get-field" as="xs:string*">
-        <xsl:param name="record" as="xs:string"/>
-        <xsl:analyze-string select="$record" regex="{$FIELD}">
+        <xsl:param name="record" as="xs:string"/>       
+        
+        <xsl:analyze-string select="$record" regex="{$field-regex}" flags="m">
             <xsl:matching-substring>
-                <xsl:sequence select="."/>
+                <xsl:sequence select="if (string(regex-group(3)))
+                    then regex-group(3)
+                    else if (string(regex-group(8)))
+                    then regex-group(8) 
+                    else ''"/>
+                
             </xsl:matching-substring>
         </xsl:analyze-string>        
     </xsl:function>
