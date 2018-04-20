@@ -22,6 +22,7 @@
     
     <xsl:variable name="header-size"  as="xs:integer?"/>
     <xsl:strip-space elements="*"/>
+   
     <xsl:template match="/"> 
         <xsl:variable name="text">10.1016/0167-4781(85)90058-2,f,2,,,,,,,,Normal rate of DNA breakage in xeroderma pigmentosum complementation group E cells treated with 8-methoxypsoralen plus near-ultraviolet radiation,0167-4781,Biochimica et Biophysica Acta (BBA) - Gene Structure and Expression,f,Elsevier BV,1985,journal-article,2018-01-21 07:37:13.422973</xsl:variable>
       <xsl:sequence select="flub:get-field($text)"></xsl:sequence>
@@ -39,11 +40,9 @@
         </xsl:map>
     </xsl:function>
     
-    <xsl:template name="filter-csv">
-        
-    </xsl:template>
+    <xsl:template name="filter-csv"/>
     
-    <xsl:function name="flub:filter-csv" expand-text="1" as="xs:string">       
+    <xsl:function name="flub:filter-csv" expand-text="1" as="xs:string">
         <xsl:param name="csv-uri" as="xs:string"/>
         <xsl:param name="get-filtered-items" 
             as="function(xs:string?) as xs:boolean"/>        
@@ -99,8 +98,9 @@
                                 then regex-group(8) 
                                 else ''"/>              
                             </xsl:matching-substring>
-                        </xsl:analyze-string></xsl:otherwise>
-        </xsl:choose>              
+                        </xsl:analyze-string>
+                    </xsl:otherwise>
+                </xsl:choose>
            </xsl:variable>
     <!--    <xsl:if test="$header-size != count($fields)">
             <xsl:message><xsl:value-of select="$fields[1]"/> irregular size</xsl:message>
@@ -109,11 +109,14 @@
     </xsl:function>
     
     <xsl:function name="flub:isCompleteRecord" as="xs:boolean">
-        <xsl:param name="string" as="xs:string?"/>
-        
+        <xsl:param name="string" as="xs:string?"/>        
         <!--assume line is Complete if no DQUOTE-->
-        <xsl:sequence select="if (not(contains($string,$DQUOTE))) then true() 
-            else matches($string,$record-regex)"/>
+        <xsl:sequence select="matches($string,$record-regex)"/>
     </xsl:function>
     
+    <xsl:function name="flub:isEscapedRecord" as="xs:boolean">
+        <xsl:param name="record" as="xs:string?"/>
+        <xsl:sequence select="if(not(contains($string,$DQUOTE))) then false()
+            else true()"/>        
+    </xsl:function>
 </xsl:stylesheet>
