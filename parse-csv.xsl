@@ -92,11 +92,11 @@
                     <xsl:otherwise>  
                         <xsl:analyze-string select="$record" regex="{$field-regex}" flags="m">
                             <xsl:matching-substring>
-                            <xsl:sequence select="if (string(regex-group(3)))
+                            <xsl:sequence select="replace(if (string(regex-group(3)))
                                 then regex-group(3)
                                 else if (string(regex-group(8)))
                                 then regex-group(8) 
-                                else ''"/>              
+                                else '',concat('(^',$DQUOTE,')|(',$DQUOTE,'$)'),'')"/>              
                             </xsl:matching-substring>
                         </xsl:analyze-string>
                     </xsl:otherwise>
