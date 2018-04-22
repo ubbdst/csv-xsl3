@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:flub="http://data.ub.uib.no/ns/xsl/function-library"
+    xmlns:flub="http://data.ub.uib.no/ns/function-library"
     xmlns:math="http://www.w3.org/2005/xpath-functions/math"
     exclude-result-prefixes="xs flub math"
     version="3.0">
@@ -102,9 +102,9 @@
                     </xsl:otherwise>
                 </xsl:choose>
            </xsl:variable>
-    <!--    <xsl:if test="$header-size != count($fields)">
+        <xsl:if test="$header-size != count($fields)">
             <xsl:message><xsl:value-of select="$fields[1]"/> irregular size</xsl:message>
-        </xsl:if>-->
+        </xsl:if>
         <xsl:sequence select="$fields"/>
     </xsl:function>
     
