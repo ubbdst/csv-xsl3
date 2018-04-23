@@ -30,11 +30,11 @@
     
     <xsl:function name="flub:get-header" as="map(xs:string,xs:integer)">
         <xsl:param name="line" as="xs:string"/>
-        <xsl:if test="not(flub:isCompleteRecord($string))">
-            <xsl:message terminate="yes">flub:get-header unable to parse header-row.</xsl:message>
+        <xsl:if test="not(flub:isCompleteRecord($line))">
+            <xsl:message terminate="yes">flub:get-header unable to parse header-row.<xsl:value-of select="$string"/></xsl:message>
         </xsl:if>
         <xsl:map>
-            <xsl:for-each select="flub:get-field($string)">
+            <xsl:for-each select="flub:get-field($line)">
                 <xsl:map-entry key="(string(.)[string(.)],concat('_',position()))[1]"  select="position()"/>
             </xsl:for-each>
         </xsl:map>
